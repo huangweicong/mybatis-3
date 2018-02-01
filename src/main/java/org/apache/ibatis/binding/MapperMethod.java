@@ -171,14 +171,17 @@ public class MapperMethod {
   @SuppressWarnings("unchecked")
   private <E> Object convertToArray(List<E> list) {
     Class<?> arrayComponentType = method.getReturnType().getComponentType();
-    Object array = Array.newInstance(arrayComponentType, list.size());
     if (arrayComponentType.isPrimitive()) {
+      if (list.size() == 1 && list.get(0).getClass().isArray()) {
+        return list.get(0);
+      }
+      Object array = Array.newInstance(arrayComponentType, list.size());
       for (int i = 0; i < list.size(); i++) {
         Array.set(array, i, list.get(i));
       }
       return array;
     } else {
-      return list.toArray((E[])array);
+      return list.toArray((E[])Array.newInstance(arrayComponentType, list.size()));
     }
   }
 
